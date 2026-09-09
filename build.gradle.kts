@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.karzoun"
-version = "0.1.0-SNAPSHOT"
+version = providers.gradleProperty("releaseVersion").orElse("0.1.0-SNAPSHOT").get()
 
 repositories {
     mavenCentral()
@@ -48,13 +48,17 @@ publishing {
             from(components["java"])
             pom {
                 name.set("Karzoun FieldSync")
-                description.set("Offline-first synchronization engine for Android field applications.")
+                description.set("Offline-first synchronization engine for field applications with bounded synchronization and JVM SQLite durability.")
                 url.set("https://github.com/mkarson1997/karzoun-fieldsync")
                 licenses {
                     license {
                         name.set("Apache License 2.0")
                         url.set("https://www.apache.org/licenses/LICENSE-2.0")
                     }
+                }
+                scm {
+                    connection.set("scm:git:https://github.com/mkarson1997/karzoun-fieldsync.git")
+                    url.set("https://github.com/mkarson1997/karzoun-fieldsync")
                 }
             }
         }
