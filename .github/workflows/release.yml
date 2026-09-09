@@ -80,7 +80,7 @@ jobs:
           sha256sum -c SHA256SUMS.txt
 
       - name: Upload reviewed release bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: fieldsync-release-${{ steps.version.outputs.version }}
           path: artifacts/
