@@ -1,10 +1,10 @@
 # Karzoun FieldSync
 
-FieldSync is an offline-first synchronization engine written in Kotlin for Android field applications that must continue accepting local work while connectivity is unreliable.
+FieldSync is an offline-first synchronization engine written in Kotlin for field applications that must continue accepting local work while connectivity is unreliable.
 
 The engine focuses on explicit synchronization semantics instead of UI or backend framework code.
 
-## Current v0.1 core
+## Current v0.1 capabilities
 
 - atomic local mutation staging contract
 - exact client mutation IDs
@@ -16,6 +16,11 @@ The engine focuses on explicit synchronization semantics instead of UI or backen
 - atomic remote-page commit contract
 - bounded pull pages
 - deterministic offline/reconnect tests
+- file-backed SQLite reference store
+- versioned schema initialization
+- WAL + `synchronous=FULL`
+- persistent pending queue, retry attempts, failure bucket, replay IDs and checkpoint
+- close/reopen restart reconstruction tests
 - JVM 17-compatible bytecode
 - CI on JDK 21 and JDK 25
 - CodeQL Java/Kotlin
@@ -34,7 +39,12 @@ local state   app-defined API
 + queue       client
 ```
 
-`SyncStore` is the durability boundary. This first milestone ships an in-memory reference store so engine semantics can be proved without pretending durability exists. A SQLite-backed store with restart recovery is the next durability milestone.
+`SyncStore` is the persistence boundary. FieldSync includes two reference implementations:
+
+- `InMemorySyncStore` for deterministic core tests and host integration examples
+- `SqliteSyncStore` for JVM file-backed durability and restart recovery evidence
+
+`SqliteSyncStore` uses SQLite JDBC. It proves durable synchronization semantics on the JVM, but it is **not** presented as an Android-native storage adapter. Android applications should implement the same `SyncStore` contract using Android SQLite/Room or another Android-native persistence layer.
 
 `SyncTransport` is deliberately abstract. Authentication, authorization, TLS policy and server API design belong to the host application.
 
@@ -47,7 +57,7 @@ Two explicit reference policies are included:
 
 Applications can provide a custom `ConflictPolicy`.
 
-FieldSync does not claim CRDT convergence, consensus, exactly-once delivery, global ordering, or server implementation.
+FieldSync does not claim CRDT convergence, consensus, exactly-once delivery, global ordering, or a bundled server implementation.
 
 ## Build
 
@@ -60,9 +70,9 @@ Requirements:
 gradle clean check --warning-mode=fail
 ```
 
-## Why this is Android-friendly
+## Why this is Android-oriented
 
-The library emits JVM 17-compatible bytecode and does not require an Android UI dependency. Android-specific scheduling and SQLite integration are planned as adapters, keeping the synchronization core testable on the JVM.
+The synchronization core emits JVM 17-compatible bytecode and has no Android UI dependency. Android-native scheduling and persistence adapters remain separate so the synchronization semantics stay directly testable on the JVM.
 
 ## License
 
