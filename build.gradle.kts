@@ -29,7 +29,7 @@ java {
 
 dependencies {
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-    implementation("org.xerial:sqlite-jdbc:3.50.3.0")
+    implementation("org.xerial:sqlite-jdbc:3.53.4.0")
     testImplementation(kotlin("test"))
 }
 
